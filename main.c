@@ -1,14 +1,13 @@
 /******************************************************************************
 * File Name: main.c
 *
-* Description: This code example how to read and write the current time using
-*              a RTC. The UART interface is used to input a command and print 
-*              the result on the terminal.
+* Description: This is the source code for the PSoC 6 MCU Real-Time Clock
+*              Basics example for ModusToolbox.
 *
-* Related Document: README.md
+* Related Document: See README.md
 *
 *******************************************************************************
-* Copyright (2019), Cypress Semiconductor Corporation. All rights reserved.
+* (c) 2019-2020, Cypress Semiconductor Corporation. All rights reserved.
 *******************************************************************************
 * This software, including source code, documentation and related materials
 * ("Software"), is owned by Cypress Semiconductor Corporation or one of its
@@ -16,7 +15,7 @@
 * protection (United States and foreign), United States copyright laws and
 * international treaty provisions. Therefore, you may use this Software only
 * as provided in the license agreement accompanying the software package from
-* which you obtained this Software ("EULA").
+* which you obtained this Software ("EULA").
 *
 * If no EULA applies, Cypress hereby grants you a personal, non-exclusive,
 * non-transferable license to copy, modify, and compile the Software source
@@ -191,7 +190,7 @@ int main(void)
                     printf("\r%s\r\n\n", buffer);
                 }
             }
-            if(RTC_CMD_SET_DATE_TIME == cmd)
+            else if(RTC_CMD_SET_DATE_TIME == cmd)
             {
                 printf("\r[Command] : Set new time\r\n");
                 set_new_time(INPUT_TIMEOUT_MS);
@@ -237,7 +236,7 @@ static void set_new_time(uint32_t timeout_ms)
         rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &ch, UART_TIMEOUT_MS);
         if(rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
         {
-            if(ch == '\n')
+            if(ch == '\n' || ch == '\r')
             {
                 break;
             }

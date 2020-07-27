@@ -28,7 +28,10 @@
 # Basic Configuration
 ################################################################################
 
-# Target board/hardware
+# Target board/hardware (BSP).
+# To change the target, use the Library manager ('make modlibs' from command line).
+# If TARGET is manually edited, ensure TARGET_<BSP>.lib with a valid URL exists
+# in the application, and run 'make getlibs' to fetch BSP contents.
 TARGET=CY8CPROTO-062-4343W
 
 # Name of application (used to derive name of final linked file).
@@ -45,8 +48,10 @@ TOOLCHAIN=GCC_ARM
 
 # Default build configuration. Options include:
 #
-# Debug   -- build with minimal optimizations, focus on debugging.
+# Debug -- build with minimal optimizations, focus on debugging.
 # Release -- build with full optimizations
+# Custom -- build with custom configuration, set the optimization flag in CFLAGS
+
 CONFIG=Debug
 
 # If set to "true" or "1", display full command-lines when building.
@@ -64,7 +69,7 @@ VERBOSE=
 #
 #    COMPONENTS=foo bar
 #
-# ... then code in directories named COMPONENT_foo and COMPONENT_bar will be 
+# ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
 COMPONENTS=
@@ -85,7 +90,7 @@ INCLUDES=
 # Add additional defines to the build process (without a leading -D).
 DEFINES=
 
-# Select softfp or hardfp floating point. Default is softfp. 
+# Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=
 
 # Additional / custom C compiler flags.
@@ -131,11 +136,11 @@ POSTBUILD=
 # This controls where automatic source code discovery looks for code.
 CY_APP_PATH=
 
-# Relative path to the "base" library. It provides the core makefile build 
+# Relative path to the "base" library. It provides the core makefile build
 # infrastructure.
 CY_BASELIB_PATH=libs/psoc6make
 
-# Absolute path to the compiler's "bin" directory. 
+# Absolute path to the compiler's "bin" directory.
 #
 # The default depends on the selected TOOLCHAIN (GCC_ARM uses the ModusToolbox
 # IDE provided compiler by default).

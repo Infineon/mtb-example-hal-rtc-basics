@@ -1,13 +1,13 @@
 /******************************************************************************
 * File Name:   main.c
 *
-* Description: This is the source code for the PSoC 6 MCU Real-Time Clock
-*              Basics example for ModusToolbox.
+* Description: This is the source code for the Infineon MCU HAL Real-Time Clock
+*              Basics example of ModusToolbox.
 *
 * Related Document: See README.md
 *
 *******************************************************************************
-* Copyright 2019-2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2019-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -42,8 +42,6 @@
 /******************************************************************************
  * Include header files
  ******************************************************************************/
-
-#include "cy_pdl.h"
 #include "cyhal.h"
 #include "cycfg.h"
 #include "cybsp.h"
@@ -139,9 +137,9 @@ static int get_week_of_month(int day, int month, int year);
 /*******************************************************************************
 * Global Variables
 *******************************************************************************/
-
 cyhal_rtc_t rtc_obj;
 uint32_t dst_data_flag = 0;
+
 
 /*******************************************************************************
 * Function Name: handle_error
@@ -168,7 +166,7 @@ void handle_error(void)
 * Function Name: main
 ********************************************************************************
 * Summary:
-*  This is the system entrance point for Cortex-M4. This function
+*   This function:
 *  - Initializes the device and board peripherals
 *  - Initializes RTC
 *  - The loop checks for the user command and process the commands
@@ -200,7 +198,7 @@ int main(void)
 
     /* \x1b[2J\x1b[;H - ANSI ESC sequence for clear screen */
     printf("\x1b[2J\x1b[;H");
-    printf("****************** PSoC 6 MCU RTC Basics ******************\r\n\n");
+    printf("****************** HAL: RTC Basics ******************\r\n\n");
 
     /* Initialize RTC */
     rslt = cyhal_rtc_init(&rtc_obj);

@@ -289,6 +289,7 @@ static void set_dst_feature(uint32_t timeout_ms)
     printf("3 : Quit DST Configuration\r\n\n");
 
     rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &dst_cmd, timeout_ms);
+    
     if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
     {
         if (RTC_CMD_ENABLE_DST == dst_cmd)
@@ -530,6 +531,7 @@ static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms, uint32_t *sp
         }
 
         rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &ch, UART_TIMEOUT_MS);
+        
         if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
         {
             if (ch == '\n' || ch == '\r')
@@ -542,12 +544,13 @@ static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms, uint32_t *sp
             }
 
             buffer[index] = ch;
+            rslt = cyhal_uart_putc(&cy_retarget_io_uart_obj, ch);
             index++;
         }
 
         timeout_ms -= UART_TIMEOUT_MS;
     }
-
+    printf("\n\r");
     return rslt;
 }
 

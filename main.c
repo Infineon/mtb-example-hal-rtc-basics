@@ -7,7 +7,7 @@
 * Related Document: See README.md
 *
 *******************************************************************************
-* Copyright 2019-2022, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2019-2023, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -46,6 +46,7 @@
 #include "cycfg.h"
 #include "cybsp.h"
 #include "cy_retarget_io.h"
+#include "string.h"
 
 /*******************************************************************************
 * Macros
@@ -121,24 +122,27 @@
 #define IS_YEAR_VALID(year) ((year) > 0U)
 
 /* Checks whether the year passed through the parameter is leap or not */
-#define IS_LEAP_YEAR(year) (((0U == (year % 4UL)) && (0U != (year % 100UL))) || (0U == (year % 400UL)))
-
-/*******************************************************************************
-* Function Prototypes
-*******************************************************************************/
-
-static void set_new_time(uint32_t timeout_ms);
-static bool validate_date_time(int sec, int min, int hour, int mday, int month, int year);
-static int get_day_of_week(int day, int month, int year);
-static void set_dst_feature(uint32_t timeout_ms);
-static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms, uint32_t *space_count);
-static int get_week_of_month(int day, int month, int year);
+#define IS_LEAP_YEAR(year) \
+(((0U == (year % 4UL)) && (0U != (year % 100UL))) || (0U == (year % 400UL)))
 
 /*******************************************************************************
 * Global Variables
 *******************************************************************************/
 cyhal_rtc_t rtc_obj;
 uint32_t dst_data_flag = 0;
+
+/*******************************************************************************
+* Function Prototypes
+*******************************************************************************/
+
+static void set_new_time(uint32_t timeout_ms);
+static bool validate_date_time(int sec, int min, int hour,
+                                int mday, int month, int year);
+static int get_day_of_week(int day, int month, int year);
+static void set_dst_feature(uint32_t timeout_ms);
+static cy_rslt_t fetch_time_data(char *buffer,
+                             uint32_t timeout_ms, uint32_t *space_count);
+static int get_week_of_month(int day, int month, int year);
 
 
 /*******************************************************************************
@@ -171,6 +175,9 @@ void handle_error(void)
 *  - Initializes RTC
 *  - The loop checks for the user command and process the commands
 *
+* Parameters :
+*  void
+*
 * Return:
 *  int
 *
@@ -190,8 +197,9 @@ int main(void)
     }
 
     /* Initialize retargeting standard IO to the debug UART port */
-    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX,
-                        CY_RETARGET_IO_BAUDRATE);
+    cy_retarget_io_init_fc(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX,
+                            CYBSP_DEBUG_UART_CTS,CYBSP_DEBUG_UART_RTS,
+                            CY_RETARGET_IO_BAUDRATE);
 
     /* Enable global interrupts */
     __enable_irq();
@@ -246,11 +254,12 @@ int main(void)
 *  This functions takes the user input ,sets the dst start/end date and time,
 *  and then enables the DST feature.
 *
-*
 * Parameter:
 *  uint32_t timeout_ms : Maximum allowed time (in milliseconds) for the
 *  function
 *
+* Return:
+*  void
 *******************************************************************************/
 static void set_dst_feature(uint32_t timeout_ms)
 {
@@ -289,7 +298,7 @@ static void set_dst_feature(uint32_t timeout_ms)
     printf("3 : Quit DST Configuration\r\n\n");
 
     rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &dst_cmd, timeout_ms);
-    
+
     if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
     {
         if (RTC_CMD_ENABLE_DST == dst_cmd)
@@ -302,13 +311,15 @@ static void set_dst_feature(uint32_t timeout_ms)
             rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &fmt, timeout_ms);
             if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
             {
-                printf("Enter DST start time in \"HH MM SS dd mm yyyy\" format\r\n");
-                rslt = fetch_time_data(dst_start_buffer, timeout_ms, &space_count);
+            printf("Enter DST start time in \"HH MM SS dd mm yyyy\" format\r\n");
+                rslt = fetch_time_data(dst_start_buffer, timeout_ms,
+                                                        &space_count);
                 if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
                 {
                     if (space_count != MIN_SPACE_KEY_COUNT)
                     {
-                        printf("\rInvalid values! Please enter the values in specified format\r\n");
+                        printf("\rInvalid values! Please enter "
+                        "the values in specified format\r\n");
                     }
                     else
                     {
@@ -316,22 +327,31 @@ static void set_dst_feature(uint32_t timeout_ms)
                                &hour, &min, &sec,
                                &mday, &month, &year);
 
-                        if ((validate_date_time(sec, min, hour, mday, month, year)) && ((fmt == FIXED_DST_FORMAT) || (fmt == RELATIVE_DST_FORMAT)))
-                        {
-                            dst_start_time.format = (fmt == FIXED_DST_FORMAT) ? CYHAL_RTC_DST_FIXED : CYHAL_RTC_DST_RELATIVE;
-                            dst_start_time.hour = hour;
-                            dst_start_time.month = month;
-                            dst_start_time.dayOfWeek = (fmt == FIXED_DST_FORMAT) ? 1 : get_day_of_week(mday, month, year);
-                            dst_start_time.dayOfMonth = (fmt == FIXED_DST_FORMAT) ? mday : 1;
-                            dst_start_time.weekOfMonth = (fmt == FIXED_DST_FORMAT) ? 1 : get_week_of_month(mday, month, year);
-                            /* Update flag value to indicate that a valid DST start time information has been received*/
-                            dst_data_flag = DST_VALID_START_TIME_FLAG;
-                        }
-                        else
-                        {
-                            printf("\rInvalid values! Please enter the values in specified"
-                                   " format\r\n");
-                        }
+                    if((validate_date_time(sec, min, hour, mday, month, year))&&
+                    ((fmt == FIXED_DST_FORMAT) || (fmt == RELATIVE_DST_FORMAT)))
+                    {
+                        dst_start_time.format =
+                        (fmt == FIXED_DST_FORMAT) ? CYHAL_RTC_DST_FIXED :
+                                                        CYHAL_RTC_DST_RELATIVE;
+                        dst_start_time.hour = hour;
+                        dst_start_time.month = month;
+                        dst_start_time.dayOfWeek =
+                        (fmt == FIXED_DST_FORMAT) ? 1 :
+                                            get_day_of_week(mday, month, year);
+                        dst_start_time.dayOfMonth =
+                        (fmt == FIXED_DST_FORMAT) ? mday : 1;
+                        dst_start_time.weekOfMonth =
+                        (fmt == FIXED_DST_FORMAT) ? 1 :
+                                        get_week_of_month(mday, month, year);
+                        /* Update flag value to indicate that a
+                            valid DST start time information has been received*/
+                        dst_data_flag = DST_VALID_START_TIME_FLAG;
+                    }
+                    else
+                    {
+                        printf("\rInvalid values! Please enter the values"
+                                   " in specified format\r\n");
+                    }
                     }
                 }
                 else
@@ -341,14 +361,18 @@ static void set_dst_feature(uint32_t timeout_ms)
 
                 if (DST_VALID_START_TIME_FLAG == dst_data_flag)
                 {
-                    /* Get DST end time information, iff a valid DST start time information is received */
-                    printf("Enter DST end time in \"HH MM SS dd mm yyyy\" format\r\n");
-                    rslt = fetch_time_data(dst_end_buffer, timeout_ms, &space_count);
+                    /* Get DST end time information,
+                    iff a valid DST start time information is received */
+                    printf("Enter DST end time "
+                    " in \"HH MM SS dd mm yyyy\" format\r\n");
+                    rslt = fetch_time_data(dst_end_buffer, timeout_ms,
+                                            &space_count);
                     if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
                     {
                         if (space_count != MIN_SPACE_KEY_COUNT)
                         {
-                            printf("\rInvalid values! Please enter the values in specified format\r\n");
+                            printf("\rInvalid values! Please"
+                            "enter the values in specified format\r\n");
                         }
                         else
                         {
@@ -356,21 +380,30 @@ static void set_dst_feature(uint32_t timeout_ms)
                                    &hour, &min, &sec,
                                    &mday, &month, &year);
 
-                            if ((validate_date_time(sec, min, hour, mday, month, year)) && ((fmt == FIXED_DST_FORMAT) || (fmt == RELATIVE_DST_FORMAT)))
+                            if((validate_date_time(sec,min,hour,mday,month,year))&&
+                                ((fmt == FIXED_DST_FORMAT) ||
+                                (fmt == RELATIVE_DST_FORMAT)))
                             {
-                                dst_end_time.format = (fmt == FIXED_DST_FORMAT) ? CYHAL_RTC_DST_FIXED : CYHAL_RTC_DST_RELATIVE;
+                                dst_end_time.format = (fmt == FIXED_DST_FORMAT)?
+                                 CYHAL_RTC_DST_FIXED : CYHAL_RTC_DST_RELATIVE;
                                 dst_end_time.hour = hour;
                                 dst_end_time.month = month;
-                                dst_end_time.dayOfWeek = (fmt == FIXED_DST_FORMAT) ? 1 : get_day_of_week(mday, month, year);
-                                dst_end_time.dayOfMonth = (fmt == FIXED_DST_FORMAT) ? mday : 1;
-                                dst_end_time.weekOfMonth = (fmt == FIXED_DST_FORMAT) ? 1 : get_week_of_month(mday, month, year);
-                                /* Update flag value to indicate that a valid DST end time information has been recieved*/
+                                dst_end_time.dayOfWeek =
+                                (fmt == FIXED_DST_FORMAT) ? 1 :
+                                get_day_of_week(mday, month, year);
+                                dst_end_time.dayOfMonth =
+                                (fmt == FIXED_DST_FORMAT) ? mday : 1;
+                                dst_end_time.weekOfMonth =
+                                (fmt == FIXED_DST_FORMAT) ? 1 :
+                                get_week_of_month(mday, month, year);
+                                /* Update flag value to indicate that a valid
+                                 DST end time information has been recieved*/
                                 dst_data_flag = DST_VALID_END_TIME_FLAG;
                             }
                             else
                             {
-                                printf("\rInvalid values! Please enter the values in specified"
-                                       " format\r\n");
+                                printf("\rInvalid values! Please enter the "
+                                       " values in specified format\r\n");
                             }
                         }
                     }
@@ -382,7 +415,8 @@ static void set_dst_feature(uint32_t timeout_ms)
 
                 if (DST_VALID_END_TIME_FLAG == dst_data_flag)
                 {
-                    rslt = cyhal_rtc_set_dst(&rtc_obj, &dst_start_time, &dst_end_time);
+                    rslt = cyhal_rtc_set_dst(&rtc_obj, &dst_start_time,
+                                                        &dst_end_time);
                     if (CY_RSLT_SUCCESS == rslt)
                     {
                         dst_data_flag = DST_ENABLED_FLAG;
@@ -440,6 +474,8 @@ static void set_dst_feature(uint32_t timeout_ms)
 *  uint32_t timeout_ms : Maximum allowed time (in milliseconds) for the
 *  function
 *
+* Return :
+*  void
 *******************************************************************************/
 static void set_new_time(uint32_t timeout_ms)
 {
@@ -457,7 +493,8 @@ static void set_new_time(uint32_t timeout_ms)
     {
         if (space_count != MIN_SPACE_KEY_COUNT)
         {
-            printf("\rInvalid values! Please enter the values in specified format\r\n");
+            printf("\rInvalid values! Please enter the"
+                    "values in specified format\r\n");
         }
         else
         {
@@ -502,21 +539,22 @@ static void set_new_time(uint32_t timeout_ms)
 * Function Name: fetch_time_data
 ********************************************************************************
 * Summary:
-*  Function fetches data entered by the user through UART and stores it in the buffer which is passed
-*  through parameters. The function also counts number of spaces in the recieved data and stores
-*  in the variable, whose address are passsed as parameter.
-*
+*  Function fetches data entered by the user through UART and stores it in the
+*  buffer which is passed through parameters. The function also counts number of
+*  spaces in the recieved data and stores in the variable, whose address are
+*  passsed as parameter.
 *
 * Parameter:
-*  char* buffer          : Buffer to store the fetched data
-*  uint32_t timeout_ms   : Maximum allowed time (in milliseconds) for the function
+*  char* buffer        : Buffer to store the fetched data
+*  uint32_t timeout_ms : Maximum allowed time (in milliseconds) for the function
 *  uint32_t* space_count : The number of spaces present in the fetched data.
 *
 * Return:
 *  Returns the status of the getc request
 *
 *******************************************************************************/
-static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms, uint32_t *space_count)
+static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms,
+                                    uint32_t *space_count)
 {
     cy_rslt_t rslt;
     uint32_t index = 0;
@@ -531,7 +569,7 @@ static cy_rslt_t fetch_time_data(char *buffer, uint32_t timeout_ms, uint32_t *sp
         }
 
         rslt = cyhal_uart_getc(&cy_retarget_io_uart_obj, &ch, UART_TIMEOUT_MS);
-        
+
         if (rslt != CY_RSLT_ERR_CSP_UART_GETC_TIMEOUT)
         {
             if (ch == '\n' || ch == '\r')
@@ -588,7 +626,7 @@ static int get_day_of_week(int day, int month, int year)
 
     k = (year % 100);
     j = (year / 100);
-    ret = (day + (13 * (month + 1) / 5) + k + (k / 4) + (j / 4) + (5 * j)) % DAYS_PER_WEEK;
+    ret=(day+(13*(month+1)/5)+k+(k/4)+(j/4)+(5*j))%DAYS_PER_WEEK;
     ret = ((ret + 6) % DAYS_PER_WEEK);
     return ret;
 }
@@ -598,8 +636,7 @@ static int get_day_of_week(int day, int month, int year)
 ********************************************************************************
 * Summary:
 *  Returns week number of the month for a year and a month that are passed
-*  through parameters. 
-*
+*  through parameters.
 *
 * Parameter:
 *  int day          : The day of the month, Valid range 1..31.
@@ -645,7 +682,8 @@ static int get_week_of_month(int day, int month, int year)
 *  false - invalid ; true - valid
 *
 *******************************************************************************/
-static bool validate_date_time(int sec, int min, int hour, int mday, int month, int year)
+static bool validate_date_time(int sec, int min, int hour, int mday,
+                                    int month, int year)
 {
     static const uint8_t days_in_month_table[MONTHS_PER_YEAR] =
         {

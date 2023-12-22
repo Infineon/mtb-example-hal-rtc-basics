@@ -197,9 +197,13 @@ int main(void)
     }
 
     /* Initialize retargeting standard IO to the debug UART port */
-    cy_retarget_io_init_fc(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX,
-                            CYBSP_DEBUG_UART_CTS,CYBSP_DEBUG_UART_RTS,
-                            CY_RETARGET_IO_BAUDRATE);
+    rslt = cy_retarget_io_init_fc(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX,
+            CYBSP_DEBUG_UART_CTS,CYBSP_DEBUG_UART_RTS,CY_RETARGET_IO_BAUDRATE);
+
+    if (CY_RSLT_SUCCESS != rslt)
+    {
+        handle_error();
+    }
 
     /* Enable global interrupts */
     __enable_irq();

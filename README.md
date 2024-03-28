@@ -4,7 +4,8 @@ This example demonstrates the usage of the real-time clock (RTC) in Infineon MCU
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-hal-rtc-basics)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjU3NDAiLCJTcGVjIE51bWJlciI6IjAwMi0yNTc0MCIsIkRvYyBUaXRsZSI6IkhBTDogUmVhbC10aW1lIGNsb2NrIGJhc2ljcyIsInJpZCI6InNkYWsiLCJEb2MgdmVyc2lvbiI6IjMuMy4wIiwiRG9jIExhbmd1YWdlIjoiRW5nbGlzaCIsIkRvYyBEaXZpc2lvbiI6Ik1DRCIsIkRvYyBCVSI6IklDVyIsIkRvYyBGYW1pbHkiOiJQU09DIn0=)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMjU3NDAiLCJTcGVjIE51bWJlciI6IjAwMi0yNTc0MCIsIkRvYyBUaXRsZSI6IkhBTDogUmVhbC10aW1lIGNsb2NrIGJhc2ljcyIsInJpZCI6InNkYWsiLCJEb2MgdmVyc2lvbiI6IjMuNC4wIiwiRG9jIExhbmd1YWdlIjoiRW5nbGlzaCIsIkRvYyBEaXZpc2lvbiI6Ik1DRCIsIkRvYyBCVSI6IklDVyIsIkRvYyBGYW1pbHkiOiJQU09DIn0=)
+
 
 
 ## Requirements
@@ -14,8 +15,11 @@ This example demonstrates the usage of the real-time clock (RTC) in Infineon MCU
    - PSoC&trade; 6 MCU: 4.2.0
    - KIT_XMC72_EVK: v2.0.0
    - CYW920829M2EVK-02: v1.0.1
+   - CYW989829M2EVB-01: v1.0.1
 - Programming language: C
 - Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu), [XMC7000 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-industrial-microcontroller-based-on-arm-cortex-m/), [TRAVEO™ T2G body high MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-traveo-t2g-arm-cortex-microcontroller/32-bit-traveo-t2g-arm-cortex-for-body/traveo-t2g-cyt4bf-series/) parts and [AIROC&trade; CYW20829 Bluetooth&reg; LE SoC](https://www.infineon.com/cms/en/product/promopages/airoc20829)
+
+
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
@@ -23,10 +27,13 @@ This example demonstrates the usage of the real-time clock (RTC) in Infineon MCU
 - Arm&reg; Compiler v6.16 (`ARM`)
 - IAR C/C++ Compiler v9.30.1 (`IAR`)
 
+
+
 ## Supported kits (make variable 'TARGET')
 
 - [PSoC&trade; 62S2 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S2-43439) (`CY8CPROTO-062S2-43439`) – Default value of `TARGET`
 - [AIROC&trade; CYW20829 Bluetooth&reg; LE Evaluation Kit](https://www.infineon.com/CYW920829M2EVK-02) (`CYW920829M2EVK-02`)
+- [AIROC&trade; CYW89829 Bluetooth&reg; LE evaluation Kit](https://www.infineon.com/CYW989829M2EVB-01) (`CYW989829M2EVB-01`)
 - [PSoC&trade; 6 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062-4343W) (`CY8CPROTO-062-4343W`)
 - [PSoC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit](https://www.infineon.com/CY8CKIT-062-WIFI-BT) (`CY8CKIT-062-WIFI-BT`)
 - [PSoC&trade; 6 Bluetooth&reg; LE Pioneer Kit](https://www.infineon.com/CY8CKIT-062-BLE) (`CY8CKIT-062-BLE`)
@@ -45,25 +52,29 @@ This example demonstrates the usage of the real-time clock (RTC) in Infineon MCU
 - [TRAVEO™ T2G body high Evaluation Kit](https://www.infineon.com/KIT_T2G-B-H_EVK) (`KIT_T2G-B-H_EVK`)
 - [TRAVEO™ T2G body high Evaluation Kit](https://www.infineon.com/KIT_T2G-B-H_LITE) (`KIT_T2G-B-H_LITE`)
 - [PSoC&trade; 62S3 Wi-Fi Bluetooth&reg; Prototyping Kit](https://www.infineon.com/CY8CPROTO-062S3-4343W) (`CY8CPROTO-062S3-4343W`)
-## Hardware setup
 
 
+
+## Hardware Setup
 
 This example uses the board's default configuration. See the kit user guide to ensure that the board is configured correctly.
 
 > **Note:** The PSoC&trade; 6 Bluetooth&reg; LE Pioneer Kit (CY8CKIT-062-BLE) and the PSoC&trade; 6 Wi-Fi Bluetooth&reg; Pioneer Kit (CY8CKIT-062-WIFI-BT) ship with KitProg2 installed. ModusToolbox&trade; requires KitProg3. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error like "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
 
-The AIROC&trade; CYW20829 Bluetooth&reg; kit (CYW920829M2EVK-02) ships with KitProg3 version 2.21 installed. The ModusToolbox&trade; software requires KitProg3 with latest version 2.40. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error such as "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
+> **Note:** The AIROC&trade; CYW20829 Bluetooth&reg; Kit (CYW920829M2EVK-02) ships with KitProg3 version 2.21 installed. The ModusToolbox&trade; software requires KitProg3 with latest version 2.40. Before using this code example, make sure that the board is upgraded to KitProg3. The tool and instructions are available in the [Firmware Loader](https://github.com/Infineon/Firmware-loader) GitHub repository. If you do not upgrade, you will see an error such as "unable to find CMSIS-DAP device" or "KitProg firmware is out of date".
+
 
 
 ## Software setup
 
-Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en).
+See the [ModusToolbox&trade; tools package installation guide](https://www.infineon.com/ModusToolboxInstallguide) for information about installing and configuring the tools package.
 
-This example requires no additional software or tools.
+Install a terminal emulator if you don't have one. Instructions in this document use [Tera Term](https://teratermproject.github.io/index-en.html).
+
 
 
 ## Using the code example
+
 
 ### Create the project
 
@@ -109,12 +120,12 @@ The following example clones the "[mtb-example-hal-rtc-basics](https://github.co
 
 The 'project-creator-cli' tool has the following arguments:
 
-Argument | Description | Required/optional
----------|-------------|-----------
-`--board-id` | Defined in the <id> field of the [BSP](https://github.com/Infineon?q=bsp-manifest&type=&language=&sort=) manifest | Required
-`--app-id`   | Defined in the <id> field of the [CE](https://github.com/Infineon?q=ce-manifest&type=&language=&sort=) manifest | Required
-`--target-dir`| Specify the directory in which the application is to be created if you prefer not to use the default current working directory | Optional
-`--user-app-name`| Specify the name of the application if you prefer to have a name other than the example's default name | Optional
+ Argument | Description | Required/optional
+ ---------|-------------|-----------
+ `--board-id` | Defined in the <id> field of the [BSP](https://github.com/Infineon?q=bsp-manifest&type=&language=&sort=) manifest | Required
+ `--app-id`   | Defined in the <id> field of the [CE](https://github.com/Infineon?q=ce-manifest&type=&language=&sort=) manifest | Required
+ `--target-dir`| Specify the directory in which the application is to be created if you prefer not to use the default current working directory | Optional
+ `--user-app-name`| Specify the name of the application if you prefer to have a name other than the example's default name | Optional
 
 > **Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at {ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf).
 
@@ -170,6 +181,9 @@ If you prefer to use the CLI, open the appropriate terminal, and navigate to the
 For more details, see the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
+
+
+
 
 ## Operation
 
@@ -258,10 +272,15 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
 
     ![](images/terminal_output_6.png)
 
+
+
 ## Debugging
 
 You can debug the example to step through the code.
+
+
 <details><summary><b>In Eclipse IDE</b></summary>
+
 Use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/MTBEclipseIDEUserGuide).
 
 > **Note:** **(Only while debugging)** On the CM4 CPU, some code in `main()` may execute before the debugger halts at the beginning of `main()`. This means that some code executes twice – once before the debugger stops execution, and again after the debugger resets the program counter to the beginning of `main()`. See [KBA231071](https://community.infineon.com/docs/DOC-21143) to learn about this and for the workaround.
@@ -272,7 +291,9 @@ Use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the 
 <details><summary><b>In other IDEs</b></summary>
 
 Follow the instructions in your preferred IDE.
+
 </details>
+
 
 
 
@@ -306,55 +327,66 @@ In addition to these methods, the DST feature can be configured using the follow
 
 - `cyhal_rtc_is_dst `: To check if DST is currently active
 
+
 ### Resources and settings
 
 **Table 1. Application resources**
 
-| Resource  |  Alias/object     |    Purpose     |
-| :------- | :------------    | :------------ |
-| UART (HAL)|cy_retarget_io_uart_obj| UART HAL object used by retarget-io for debug UART port  |
-| RTC  (HAL)|rtc_obj| RTC HAL object for RTC interface  |
+ Resource  |  Alias/object     |    Purpose     
+ :------- | :------------    | :------------ 
+ UART (HAL)|cy_retarget_io_uart_obj| UART HAL object used by retarget-io for debug UART port  
+ RTC  (HAL)|rtc_obj| RTC HAL object for RTC interface  
 
 <br>
 
+
+
+
 ## Related resources
 
-Resources  | Links
------------|----------------------------------
-Application notes  | [AN228571](https://www.infineon.com/AN228571) – Getting started with PSoC&trade; 6 MCU on ModusToolbox&trade; software <br> [AN234334](https://www.infineon.com/dgdl/Infineon-AN234334_Getting_started_with_XMC7000_MCU_on_ModusToolbox_software-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c8412f8d301842d32c5765bfd) – Getting started with XMC7000 MCU on ModusToolbox&trade; | Describes XMC7000 MCU devices and how to build your first application with ModusToolbox&trade; software
-Code examples  | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub <br> [Using PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/software/code-examples/psoc-3-4-5-code-examples-for-psoc-creator)
-Device documentation | [PSoC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br> [PSoC&trade; 6 technical reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)<br> [PSoC&trade; 4 datasheets](https://www.infineon.com/cms/en/search.html?intc=searchkwr-return#!view=downloads&term=psoc%204&doc_group=Data%20Sheet) <br>[PSoC&trade; 4 technical reference manuals](https://www.infineon.com/cms/en/search.html#!term=psoc%204%20technical%20reference%20manual&view=all)
-Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board)
-Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSoC&trade; 6 peripheral driver library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware abstraction layer (HAL) library <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port <br>  [mtb-pdl-cat2](https://github.com/Infineon/mtb-pdl-cat2) – PSoC&trade; 4 peripheral driver library (PDL) <br />  [mtb-hal-cat2](https://github.com/Infineon/mtb-hal-cat2) – Hardware abstraction layer (HAL) library
-Middleware on GitHub  | [capsense](https://github.com/Infineon/capsense) – CAPSENSE&trade; library and documents <br> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
-Tools  | [Eclipse IDE for ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices. <br> [PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/tools/sdk/psoc-software/psoc-creator/) – IDE for PSoC&trade; and FM0+ MCU development
+ Resources  | Links
+ -----------|----------------------------------
+ Application notes  | [AN228571](https://www.infineon.com/AN228571) – Getting started with PSoC&trade; 6 MCU on ModusToolbox&trade; software <br> [AN234334](https://www.infineon.com/dgdl/Infineon-AN234334_Getting_started_with_XMC7000_MCU_on_ModusToolbox_software-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c8412f8d301842d32c5765bfd) – Getting started with XMC7000 MCU on ModusToolbox&trade; | Describes XMC7000 MCU devices and how to build your first application with ModusToolbox&trade; software
+ Code examples  | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub <br> [Using PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/software/code-examples/psoc-3-4-5-code-examples-for-psoc-creator)
+ Device documentation | [PSoC&trade; 6 MCU datasheets](https://documentation.infineon.com/html/psoc6/bnm1651211483724.html) <br> [PSoC&trade; 6 technical reference manuals](https://documentation.infineon.com/html/psoc6/zrs1651212645947.html)<br> [PSoC&trade; 4 datasheets](https://www.infineon.com/cms/en/search.html?intc=searchkwr-return#!view=downloads&term=psoc%204&doc_group=Data%20Sheet) <br>[PSoC&trade; 4 technical reference manuals](https://www.infineon.com/cms/en/search.html#!term=psoc%204%20technical%20reference%20manual&view=all)
+ Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board)
+ Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – PSoC&trade; 6 peripheral driver library (PDL)  <br> [mtb-hal-cat1](https://github.com/Infineon/mtb-hal-cat1) – Hardware abstraction layer (HAL) library <br> [retarget-io](https://github.com/Infineon/retarget-io) – Utility library to retarget STDIO messages to a UART port <br>  [mtb-pdl-cat2](https://github.com/Infineon/mtb-pdl-cat2) – PSoC&trade; 4 peripheral driver library (PDL) <br />  [mtb-hal-cat2](https://github.com/Infineon/mtb-hal-cat2) – Hardware abstraction layer (HAL) library
+ Middleware on GitHub  | [capsense](https://github.com/Infineon/capsense) – CAPSENSE&trade; library and documents <br> [psoc6-middleware](https://github.com/Infineon/modustoolbox-software#psoc-6-middleware-libraries) – Links to all PSoC&trade; 6 MCU middleware
+ Tools  | [Eclipse IDE for ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use software and tools enabling rapid development with Infineon MCUs, covering applications from embedded sense and control to wireless and cloud-connected systems using AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices. <br> [PSoC&trade; Creator](https://www.infineon.com/cms/en/design-support/tools/sdk/psoc-software/psoc-creator/) – IDE for PSoC&trade; and FM0+ MCU development
 
 <br />
 
+
+
+
 ## Other resources
 
-Infineon provides a wealth of data at www.infineon.com to help you select the right device, and quickly and effectively integrate it into your design.
-
-For PSoC&trade; 6 MCU devices, see [How to design with PSoC&trade; 6 MCU - KBA223067](https://community.infineon.com/docs/DOC-14644) in the Infineon Developer community.
+Infineon provides a wealth of data at [www.infineon.com](https://www.infineon.com) to help you select the right device, and quickly and effectively integrate it into your design.
 
 For XMC&trade; MCU devices, see [32-bit XMC&trade; Industrial microcontroller based on Arm® Cortex®-M](https://www.infineon.com/cms/en/product/microcontroller/32-bit-industrial-microcontroller-based-on-arm-cortex-m/).
+
+
 
 ## Document history
 
 Document title: *CE225740* – *HAL: Real-time clock basics*
 
-| Version | Description of change |
-| ------- | --------------------- |
-| 1.0.0   | New code example      |
-| 1.1.0   | Updated to support ModusToolbox&trade; software v2.1.<br>Minor formatting changes to the code.  |
-| 2.0.0   | Major update to support ModusToolbox&trade; software v2.2, added support for new kits.<br /> This version is not backward compatible with ModusToolbox&trade; software v2.1.  |
-| 2.1.0   | Added support for CYSBSYSKIT-DEV-01 Rapid IoT Connect developer kit |
-| 2.1.1   | Updated to support ModusToolbox&trade; software v2.3.<br /> Added support for CY8CKIT-062S4. |
-| 3.0.0   | Major update to support ModusToolbox&trade; software v3.0. <br> Added support for KIT_XMC72_EVK. |
-| 3.1.0   | Added support for CY8CEVAL-062S2, CY8CEVAL-062S2-LAI-4373M2, CY8CEVAL-062S2-MUR-43439M2, CY8CPROTO-064B0S3, and CY8CPROTO-064S1-SB. |
-| 3.2.0   | Added support for CYW920829M2EVK-02, KIT_T2G-B-H_EVK and KIT_T2G-B-H_LITE <br> Replaced retarget_io_init() with retarget_io_init_fc() function. |
-| 3.3.0   | Added support for KIT_XMC71_EVK_LITE_V1, CYBLE-416045-EVAL and CY8CPROTO-062S2-43439. <br> Updated to support ModusToolbox&trade; v3.1. |
+ Version | Description of change 
+ ------- | --------------------- 
+ 1.0.0   | New code example      
+ 1.1.0   | Updated to support ModusToolbox&trade; software v2.1.<br>Minor formatting changes to the code.  
+ 2.0.0   | Major update to support ModusToolbox&trade; software v2.2, added support for new kits.<br /> This version is not backward compatible with ModusToolbox&trade; software v2.1.  
+ 2.1.0   | Added support for CYSBSYSKIT-DEV-01 Rapid IoT Connect developer kit 
+ 2.1.1   | Updated to support ModusToolbox&trade; software v2.3.<br /> Added support for CY8CKIT-062S4. 
+ 3.0.0   | Major update to support ModusToolbox&trade; software v3.0. <br> Added support for KIT_XMC72_EVK. 
+ 3.1.0   | Added support for CY8CEVAL-062S2, CY8CEVAL-062S2-LAI-4373M2, CY8CEVAL-062S2-MUR-43439M2, CY8CPROTO-064B0S3, and CY8CPROTO-064S1-SB. 
+ 3.2.0   | Added support for CYW920829M2EVK-02, KIT_T2G-B-H_EVK and KIT_T2G-B-H_LITE <br> Replaced retarget_io_init() with retarget_io_init_fc() function. 
+ 3.3.0   | Added support for KIT_XMC71_EVK_LITE_V1, CYBLE-416045-EVAL and CY8CPROTO-062S2-43439. <br> Updated to support ModusToolbox&trade; v3.1. 
+ 3.4.0   | Added support for CYW989829M2EVB-01 
+ 
 <br>
+
+
 
 All referenced product or service names and trademarks are the property of their respective owners.
 
